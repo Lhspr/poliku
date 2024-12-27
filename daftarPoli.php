@@ -43,7 +43,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header text-center fw-bold" style="font-size: 2rem;">Pendaftaran Pasien</div>
+                <div class="card-header text-center fw-bold" style="font-size: 2rem;">Pendaftaran Poli</div>
                 <div class="card-body">
                     <form class="form row" method="POST" style="width: 30rem;" action="" name="myForm" onsubmit="return(validate());">
                         <!-- Kode php untuk menghubungkan form dengan database -->

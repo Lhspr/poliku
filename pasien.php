@@ -38,18 +38,24 @@
             document.location='index.php?page=pasien';
             </script>";
     }
-    if (isset($_GET['aksi'])) {
-        if ($_GET['aksi'] == 'hapus') {
-        // Hapus data terkait di tabel daftar_poli terlebih dahulu
-        $hapusTerkait = mysqli_query($mysqli, "DELETE FROM daftar_poli WHERE id_pasien = '" . $_GET['id'] . "'");
-        // Setelah data terkait dihapus, hapus data pasien
-        $hapus = mysqli_query($mysqli, "DELETE FROM pasien WHERE id = '" . $_GET['id'] . "'");
-        }
+    if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
+        // Delete related rows in 'detail_periksa' table
+        $hapusDetailPeriksa = mysqli_query($mysqli, "DELETE FROM detail_periksa WHERE id_periksa IN (SELECT id FROM periksa WHERE id_daftar_poli IN (SELECT id FROM daftar_poli WHERE id_pasien = '" . $_GET['id'] . "'))");
     
-        echo "<script> 
+        // Delete related rows in 'periksa' table
+        $hapusPeriksa = mysqli_query($mysqli, "DELETE FROM periksa WHERE id_daftar_poli IN (SELECT id FROM daftar_poli WHERE id_pasien = '" . $_GET['id'] . "')");
+    
+        // Delete related rows in 'daftar_poli' table
+        $hapusDaftarPoli = mysqli_query($mysqli, "DELETE FROM daftar_poli WHERE id_pasien = '" . $_GET['id'] . "'");
+    
+        // Delete row in 'pasien' table
+        $hapusPasien = mysqli_query($mysqli, "DELETE FROM pasien WHERE id = '" . $_GET['id'] . "'");
+    
+        echo "<script>
                 document.location='index.php?page=pasien';
             </script>";
     }
+    
 ?>
 
 <br>

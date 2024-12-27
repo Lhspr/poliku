@@ -6,46 +6,44 @@
         $alamat = $_POST['alamat'];
         $no_ktp = $_POST['no_ktp'];
         $no_hp = $_POST['no_hp'];
+        $password = $_POST['password'];
 
-        // Membuat no_rm
-        if ($result->num_rows == 0) {
-            // ambil jumlah total pasien dari database
-            $result = mysqli_query($mysqli, "SELECT COUNT(*) as total FROM pasien");
-            $row = mysqli_fetch_assoc($result);
-            $totalPasien = $row['total'];
+        // Hash password sebelum disimpan ke database
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // Generate no_rm berdasarkan tanggal saat ini dan total pasien
-            $no_rm = date('Y') . date('m') . '-' . ($totalPasien + 1);
+        // Ambil jumlah total pasien dari database
+        $result = mysqli_query($mysqli, "SELECT COUNT(*) as total FROM pasien");
+        $row = mysqli_fetch_assoc($result);
+        $totalPasien = $row['total'];
 
-            // Menyimpan data pasien ke dalam database
-            $sql = "INSERT INTO pasien (nama, alamat, no_ktp, no_hp, no_rm) VALUES ('$nama', '$alamat', '$no_ktp', '$no_hp', '$no_rm')";
-            $tambah = mysqli_query($mysqli, $sql);
-            $success = "No RM anda adalah $no_rm";
+        // Generate no_rm berdasarkan tahun, bulan, dan total pasien
+        // Menggunakan str_pad untuk menambahkan nol di depan nomor pasien
+        $no_rm = date('Y') . date('m') . '-' . str_pad($totalPasien + 1, 3, '0', STR_PAD_LEFT);
+
+        // Menyimpan data pasien ke dalam database
+        $sql = "INSERT INTO pasien (nama, alamat, no_ktp, no_hp, no_rm, password) VALUES ('$nama', '$alamat', '$no_ktp', '$no_hp', '$no_rm', '$hashed_password')";
+        $tambah = mysqli_query($mysqli, $sql);
+        
+        if ($tambah) {
+            // Jika berhasil, arahkan ke halaman dengan no_rm yang baru
             header("Location: index.php?page=daftarpasienbaru&no_rm=$no_rm");
         } else {
-            $error = "Gagal";
-            // echo "
-            //     <script> 
-            //         alert('Berhasil menambah data.');
-            //         document.location='index.php?page=daftarPasienBaru';
-            //     </script>
-            // ";
+            // Jika gagal, tampilkan pesan error
+            $error = "Gagal menambah data pasien.";
         }
-
-
     }
 ?>
 
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="row border rounded-5 p-3 bg-white shadow box-area"> 
-<!-------------------------- Right Box ---------------------------->
+        <!-------------------------- Right Box ---------------------------->
         <div class="col-md-6 right-box">
             <div class="row align-items-center">
                 <div class="header-text mb-4">
                     <h2 class="text-center">Hello! </h2>
                     <p>Selamat Datang di Pusat Pendaftaran!</p>
                 </div>
-                <form method="POST" action="index.php?page=daftarPasienBaru">
+                <form method="POST" action="index.php?page=daftarpasienbaru">
                     <?php
                         if (!isset($error) && isset($_GET['no_rm'])) {
                             echo '
@@ -73,6 +71,10 @@
                     <div class="form-group mb-3">
                         <label for="nama">Nama Lengkap</label> 
                         <input type="text" name="nama" class="form-control form-control-lg bg-light fs-6" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="password">Password</label> 
+                        <input type="password" name="password" class="form-control form-control-lg bg-light fs-6" placeholder="Masukkan password" required>
                     </div>
                     <div class="form-group mb-3">
                         <label for="alamat">Alamat</label> 

@@ -28,14 +28,35 @@ if (isset($_POST['simpan'])) {
         document.location='index.php?page=poli';
         </script>";
 }
-if (isset($_GET['aksi'])) {
-    if ($_GET['aksi'] == 'hapus') {
-        $hapus = mysqli_query($mysqli, "DELETE FROM poli WHERE id = '" . $_GET['id'] . "'");
+if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
+    $idPoli = $_GET['id'];
+
+    // Step 1: Hapus data di tabel detail_periksa yang mengacu pada periksa
+    $hapusDetailPeriksa = mysqli_query($mysqli, "DELETE FROM detail_periksa WHERE id_periksa IN (SELECT id FROM periksa WHERE id_daftar_poli IN (SELECT id FROM daftar_poli WHERE id_jadwal IN (SELECT id FROM jadwal_periksa WHERE id_dokter IN (SELECT id FROM dokter WHERE id_poli = '$idPoli'))))");
+
+    // Pastikan query berhasil
+    if (!$hapusDetailPeriksa) {
+        die('Error: ' . mysqli_error($mysqli));
     }
 
+    // Step 2: Hapus data di tabel periksa yang mengacu pada daftar_poli
+    $hapusPeriksa = mysqli_query($mysqli, "DELETE FROM periksa WHERE id_daftar_poli IN (SELECT id FROM daftar_poli WHERE id_jadwal IN (SELECT id FROM jadwal_periksa WHERE id_dokter IN (SELECT id FROM dokter WHERE id_poli = '$idPoli')))");
+
+    // Step 3: Hapus data di daftar_poli yang mengacu pada jadwal_periksa
+    $hapusDaftarPoli = mysqli_query($mysqli, "DELETE FROM daftar_poli WHERE id_jadwal IN (SELECT id FROM jadwal_periksa WHERE id_dokter IN (SELECT id FROM dokter WHERE id_poli = '$idPoli'))");
+
+    // Step 4: Hapus data di jadwal_periksa yang terkait dengan id_dokter
+    $hapusJadwal = mysqli_query($mysqli, "DELETE FROM jadwal_periksa WHERE id_dokter IN (SELECT id FROM dokter WHERE id_poli = '$idPoli')");
+
+    // Step 5: Hapus data dokter yang terkait dengan poli
+    $hapusDokter = mysqli_query($mysqli, "DELETE FROM dokter WHERE id_poli = '$idPoli'");
+
+    // Step 6: Hapus data poli
+    $hapusPoli = mysqli_query($mysqli, "DELETE FROM poli WHERE id = '$idPoli'");
+
     echo "<script> 
-            document.location='index.php?page=poli';
-        </script>";
+        document.location='index.php?page=poli';
+    </script>";
 }
 ?>
 

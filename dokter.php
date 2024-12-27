@@ -3,7 +3,7 @@ if (!isset($_SESSION)) {
     session_start();
 }
 if (!isset($_SESSION['username'])) {
-    // Jika pengguna sudah login, tampilkan tombol "Logout"
+    // Jika pengguna belum login, redirect ke halaman login
     header("Location: index.php?page=loginUser");
     exit;
 }
@@ -21,15 +21,13 @@ if (isset($_POST['simpan'])) {
     } else {
         // Jika data dokter baru, jalankan query INSERT
         $tambah = mysqli_query($mysqli, "INSERT INTO dokter (nama, alamat, no_hp, id_poli, password) 
-    VALUES (
-        '" . $_POST['nama'] . "',
-        '" . $_POST['alamat'] . "',
-        '" . $_POST['no_hp'] . "',
-        '" . $_POST['id_poli'] . "',
-        '" . $_POST['alamat'] . "'
-    )");
-
-
+        VALUES (
+            '" . $_POST['nama'] . "',
+            '" . $_POST['alamat'] . "',
+            '" . $_POST['no_hp'] . "',
+            '" . $_POST['id_poli'] . "',
+            '" . $_POST['alamat'] . "'
+        )");
     }
     echo "<script> 
             document.location='index.php?page=dokter';
@@ -46,6 +44,7 @@ if (isset($_GET['aksi'])) {
         </script>";
 }
 ?>
+
 <br>
 <div class="container">
     <div class="row justify-content-center">
@@ -129,7 +128,7 @@ if (isset($_GET['aksi'])) {
                             </div>
                         </div>
                         <div class="row mt-3">
-                            <div class=col>
+                            <div class="col">
                                 <button type="submit" class="btn btn-primary rounded-pill px-3 mt-auto"
                                     name="simpan">Simpan</button>
                             </div>
@@ -151,16 +150,18 @@ if (isset($_GET['aksi'])) {
                 <th scope="col">Nama</th>
                 <th scope="col">Alamat</th>
                 <th scope="col">No Hp</th>
-                <th scope="col">Id Poli</th>
+                <th scope="col">Poli Dokter</th>
                 <th scope="col">Aksi</th>
             </tr>
         </thead>
         <!--tbody berisi isi tabel sesuai dengan judul atau head-->
         <tbody>
-            <!-- Kode PHP untuk menampilkan semua isi dari tabel urut-->
+            <!-- Kode PHP untuk menampilkan semua isi dari tabel dokter-->
             <?php
-            // Mengambil data dokter dari database
-            $result = mysqli_query($mysqli, "SELECT * FROM dokter");
+            // Mengambil data dokter dengan join tabel poli
+            $result = mysqli_query($mysqli, "SELECT dokter.*, poli.nama_poli 
+                                            FROM dokter 
+                                            JOIN poli ON dokter.id_poli = poli.id");
             $no = 1;
             // Looping untuk menampilkan data dokter dalam tabel
             while ($data = mysqli_fetch_array($result)) {
@@ -170,28 +171,26 @@ if (isset($_GET['aksi'])) {
                     <td><?php echo $data['nama'] ?></td>
                     <td><?php echo $data['alamat'] ?></td>
                     <td><?php echo $data['no_hp'] ?></td>
-                    <td class="text-center"><?php echo $data['id_poli'] ?></td>
-                    <td class="d-flex justify-content-center ">
+                    <td class="text-center"><?php echo $data['nama_poli'] ?></td> <!-- Menampilkan nama_poli -->
+                    <td class="d-flex justify-content-center">
                         <div class="d-flex gap-2 mb-3">
                             <a type="button" class="btn btn-success rounded-pill px-3"
-                                href="index.php?page=dokter&id=<?php echo $data['id'] ?>">
+                               href="index.php?page=dokter&id=<?php echo $data['id'] ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                     class="bi bi-pencil-square" viewBox="0 0 16 16">
                                     <path
                                         d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
                                     <path fill-rule="evenodd"
-                                        d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                          d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                                 </svg>
-
                             </a>
                             <a type="button" class="btn btn-danger rounded-pill px-3"
-                                href="index.php?page=dokter&id=<?php echo $data['id'] ?>&aksi=hapus">
+                               href="index.php?page=dokter&id=<?php echo $data['id'] ?>&aksi=hapus">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-trash3" viewBox="0 0 16 16">
+                                     class="bi bi-trash3" viewBox="0 0 16 16">
                                     <path
                                         d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
                                 </svg>
-
                             </a>
                         </div>
                     </td>
@@ -201,3 +200,4 @@ if (isset($_GET['aksi'])) {
             ?>
         </tbody>
     </table>
+</div>

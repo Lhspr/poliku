@@ -21,7 +21,7 @@ include_once("koneksi.php");
 <body>
     <nav class="navbar navbar-expand-lg navbar-expand-lg navbar-light bg-light pt-2 ps-4 pe-3 shadow-sm fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="index.php">Poliklinik UDINUS</a>
+            <a class="navbar-brand" href="index.php">POLIKLINIK UDINUS</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
                 aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -43,6 +43,10 @@ include_once("koneksi.php");
                         ?>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="index.php?page=daftarPasien">Daftar Pasien</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="index.php?page=riwayatPasienByNoRm">Riwayat
+                                Pasien</a>
                         </li>
                         <?php
                     }
@@ -143,22 +147,6 @@ include_once("koneksi.php");
                         <div class="container-fluid">
                             <div class="row justify-content-center">
                                 <div class="col-lg-7 text-center">
-                                    <div class="text">
-                                        <h1 class="text-dark">Sistem Temu Janji</h1>
-                                        <h2 class="text-dark">Pasien - Dokter</h2>
-                                        <p class="text-dark text-justify">
-                                            Selamat datang di Poliklinik Universitas Dian Nuswantoro
-                                        </p>
-                                        <p class="text-dark text-justify">
-                                            Pusat perawatan kesehatan yang berkomitmen menyediakan perhatian 
-                                            medis berkualitas dan solusi terkini. Tim medis berpengalaman kami siap 
-                                            membantu Anda mencapai kesehatan optimal dengan penuh perhatian. 
-                                            Prioritaskan kenyamanan, kesejahteraan, dan kepuasan pasien bersama kami.
-                                        </p>
-                                        <span class="text-dark">
-                                            Poliklinik Unggul dengan Tim Medis Berpengalaman.
-                                        </span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -211,7 +199,7 @@ include_once("koneksi.php");
                                     <div class="col-lg-12">
                                         <div class="section-title">
                                             <h2>Kami Selalu Siap Membantu Anda & Keluarga Anda</h2>
-                                            <div class="images"><img src="img/section-img.png" alt="#"></div>
+                                            
                                             <p>Menyediakan layanan terbaik untuk memastikan kesejahteraan dan kebahagiaan keluarga Anda dan Mahasiswa Udinus. 
                                             <p>xDengan tim profesional yang berkomitmen, 
                                             kami hadir untuk menjawab setiap kebutuhan dan memberikan solusi terbaik.</p>
