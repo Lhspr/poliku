@@ -77,4 +77,4 @@ if (isset($_GET['aksi'])) {
             ?>  
         </tbody>  
     </table>  
-</div>
+</div> 
