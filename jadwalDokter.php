@@ -25,7 +25,7 @@ if (isset($_POST['tambah'])) {
                     '" . $_POST['hari'] . "',
                     '" . $_POST['jam_mulai'] . "',
                     '" . $_POST['jam_selesai'] . "',
-                    '0'  -- Status default aktif
+                    '0'  -- Status default tidak aktif
                 )");
 
             if (!$tambah) {
@@ -39,15 +39,14 @@ if (isset($_POST['tambah'])) {
 // Menangani perubahan status
 if (isset($_POST['ubah_status'])) {
     if (isset($_POST['id'])) {
-        // Ambil status saat ini
-        $current_status_query = mysqli_query($mysqli, "SELECT status FROM jadwal_periksa WHERE id = '" . $_POST['id'] . "'");
-        $current_status = mysqli_fetch_assoc($current_status_query)['status'];
+        // Nonaktifkan semua jadwal lain terlebih dahulu
+        $nonaktifkan_jadwal = mysqli_query($mysqli, "UPDATE jadwal_periksa SET status = '0' WHERE id_dokter = '" . $_SESSION['id'] . "'");
+        if (!$nonaktifkan_jadwal) {
+            echo "Error updating record: " . mysqli_error($mysqli);
+        }
 
-        // Toggle status
-        $new_status = ($current_status == 0) ? 1 : 0; // Jika aktif (0), ubah menjadi tidak aktif (1), dan sebaliknya
-        $ubah = mysqli_query($mysqli, "UPDATE jadwal_periksa SET 
-            status = '$new_status' 
-            WHERE id = '" . $_POST['id'] . "'");
+        // Aktifkan jadwal yang dipilih
+        $ubah = mysqli_query($mysqli, "UPDATE jadwal_periksa SET status = '1' WHERE id = '" . $_POST['id'] . "'");
 
         if (!$ubah) {
             echo "Error updating record: " . mysqli_error($mysqli);
@@ -142,7 +141,7 @@ $status = '0';
                     <td class="text-center"><?php echo $data['jam_selesai'] ?></td>
                     <td class="d-flex gap-2 mb-3 d-flex justify-content-center">
                         <?php 
-                            echo ($data['status'] == 0) ? 
+                            echo ($data['status'] == 1) ? 
                             '<a class="btn btn-success rounded-pill px-3">Aktif</a>' : 
                             '<a class="btn btn-danger rounded-pill px-3">Tidak Aktif</a>';
                         ?>
